@@ -3,6 +3,7 @@ Template.postEdit.events({
         e.preventDefault();
 
         var currentPostId = this._id;
+        var currentPostUrl = this.url;
 
         var postProperties = {
             url: $(e.target).find('[name=url]').val(),
@@ -10,11 +11,17 @@ Template.postEdit.events({
         }
 
         Posts.update(currentPostId, {$set: postProperties}, function (error) {
-            if (error) {
-                // display the error to the user
-                alert(error.reason);
+            var postWithSameLink = Posts.findOne({url: currentPostUrl});
+            if (postWithSameLink) {
+
+                alert('This link has already been posted');
             } else {
-                Router.go('postPage', {_id: currentPostId});
+                if (error) {
+                    // display the error to the user
+                    alert(error.reason);
+                } else {
+                    Router.go('postPage', {_id: currentPostId});
+                }
             }
         });
     },
